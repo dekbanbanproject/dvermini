@@ -357,6 +357,101 @@ class FdhController extends Controller
             'status'     => '200'
         ]);
     }
+    public function fdh_mini_dataset_api(Request $request)
+    {
+        $ip = $request->ip();
+        $username = $request->username;
+        $password = $request->password;
+
+        if ($ip == '::1') {
+            $username        = $request->username;
+            $password        = $request->password;
+            $password_hash   = strtoupper(hash_hmac('sha256', $password, '$jwt@moph#'));
+
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://fdh.moph.go.th/token?Action=get_moph_access_token&user=' . $username . '&password_hash=' . $password_hash . '&hospital_code=10978',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_HTTPHEADER => array(
+                    'Cookie: __cfruid=bedad7ad2fc9095d4827bc7be4f52f209543768f-1714445470'
+                ),
+            ));
+            $token = curl_exec($curl);
+            // dd($token); 
+            curl_close($curl);
+
+            $check = Api_neweclaim::where('api_neweclaim_user', $username)->where('api_neweclaim_pass', $password)->count();
+            if ($check > 0) {
+                Api_neweclaim::where('api_neweclaim_user', $username)->update([
+                    'api_neweclaim_token'       => $token,
+                    // 'user_id'                   => Auth::user()->id,
+                    'password_hash'             => $password_hash,
+                    'hospital_code'             => '50178',
+                ]);
+            } else {
+                Api_neweclaim::insert([
+                    'api_neweclaim_user'        => $username,
+                    'api_neweclaim_pass'        => $password,
+                    'api_neweclaim_token'       => $token,
+                    'password_hash'             => $password_hash,
+                    'hospital_code'             => '50178',
+                    // 'user_id'                   => Auth::user()->id,
+                ]);
+            }
+        } else {
+
+            $username        = $request->username;
+            $password        = $request->password;
+            $password_hash   = strtoupper(hash_hmac('sha256', $password, '$jwt@moph#'));
+
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://fdh.moph.go.th/token?Action=get_moph_access_token&user=' . $username . '&password_hash=' . $password_hash . '&hospital_code=10978',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_HTTPHEADER => array(
+                    'Cookie: __cfruid=bedad7ad2fc9095d4827bc7be4f52f209543768f-1714445470'
+                ),
+            ));
+            $token = curl_exec($curl);
+            // dd($token); 
+            curl_close($curl);
+     
+            $check = Api_neweclaim::where('api_neweclaim_user', $username)->where('api_neweclaim_pass', $password)->count();
+            if ($check > 0) {
+                Api_neweclaim::where('api_neweclaim_user', $username)->update([
+                    'api_neweclaim_token'       => $token,
+                    // 'user_id'                   => Auth::user()->id,
+                    'password_hash'             => $password_hash,
+                    'hospital_code'             => '50178',
+                ]);
+            } else {
+                Api_neweclaim::insert([
+                    'api_neweclaim_user'        => $username,
+                    'api_neweclaim_pass'        => $password,
+                    'api_neweclaim_token'       => $token,
+                    'password_hash'             => $password_hash,
+                    'hospital_code'             => '50178',
+                    // 'user_id'                   => Auth::user()->id,
+                ]);
+            }
+        }
+
+        return response()->json([
+            'status'     => '200'
+        ]);
+    }
 
     // ************************** จองเคลม **************
     public function fdh_mini_dataset_apicliam(Request $request)

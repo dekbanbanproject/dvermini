@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Api_neweclaim extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
     protected $table = 'api_neweclaim';
     protected $primaryKey = 'api_neweclaim_id';
